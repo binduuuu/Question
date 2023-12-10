@@ -12,6 +12,8 @@ import java.util.UUID;
 public interface AnswerService {
     Boolean topicExists(String topicName);
     String getTopicId(String topicName);
+
+    List<Answer> getHomeAnswersByCategory(int page,int size,List<String> categories);
     Boolean addAnswer (AnswerDto answerDto);
     List<Answer> getAllAnswers();
     Optional<Answer> getAnswerById(String answerId);

@@ -16,5 +16,5 @@ public class CommentDto {
     private String commentTypes;
 //    private String questionId;
     private String answerId;
-    private List<String> replies;
+//    private List<String> replies;
 }

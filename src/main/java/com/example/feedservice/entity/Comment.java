@@ -14,7 +14,7 @@ public class Comment {
     private String commentId;
     private String userId;
     private String content;
-    private List<String> replies;
+    private List<String> repliIds;
     private String commentTypes;
     private String questionId;
     private String answerId;

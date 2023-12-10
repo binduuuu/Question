@@ -11,17 +11,19 @@ import java.util.List;
 @Document(collection = "answer")
 public class Answer {
 
-    private String questionId;
+
 
     @Id
     private String answerId;
+    private String questionId;
     private String userId;
+    private String answer;
     private Date createdAt;
-    //answerIds
     private int upvotes;
     private int downvotes;
     private List<String> commentIds;
-    private String topicId;
+    private List<String> upvoteIds;
+    private List<String> downvoteIds;
     private String topicName;
-    private String commentVisibility;
+    private Boolean commentVisibility;
 }

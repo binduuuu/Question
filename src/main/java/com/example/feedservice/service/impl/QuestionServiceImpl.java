@@ -15,6 +15,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 @Service
@@ -47,21 +48,23 @@ public class QuestionServiceImpl implements QuestionService {
         BeanUtils.copyProperties(questionDto, question);
         String questionId = UUID.randomUUID().toString();
         question.setQuestionId(questionId);
+        List<String> answerIds = new ArrayList<>();
+        question.setAnswerIds(answerIds);
         String topicName = questionDto.getTopicName();
 
-        if(!topicExists(topicName)) {
-            Topic newTopic = new Topic();
-            String topicId = UUID.randomUUID().toString();
-            newTopic.setTopicId(topicId);
-            newTopic.setTopicName(questionDto.getTopicName());
-            topicRepository.save(newTopic);
-        }
-        else {
-            String topicId = getTopicId(questionDto.getTopicName());
-            if(topicId!=null) {
-                question.setTopicId(topicId);
-            }
-        }
+//        if(!topicExists(topicName)) {
+//            Topic newTopic = new Topic();
+//            String topicId = UUID.randomUUID().toString();
+//            newTopic.setTopicId(topicId);
+//            newTopic.setTopicName(questionDto.getTopicName());
+//            topicRepository.save(newTopic);
+//        }
+//        else {
+//            String topicId = getTopicId(questionDto.getTopicName());
+//            if(topicId!=null) {
+//                question.setTopicId(topicId);
+//            }
+//        }
         Question newQuestion = questionRepository.save(question);
         return Objects.nonNull(newQuestion);
     }

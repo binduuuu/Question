@@ -11,10 +11,9 @@ public class AnswerDto {
     private String questionId;
     private String userId;
     private Date createdAt;
+    private String answer;
     //answerIds
     private int upvotes;
     private int downvotes;
-//    private String commentIds;
-//    private String topicName;
 }
 

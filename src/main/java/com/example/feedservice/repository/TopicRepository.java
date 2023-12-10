@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TopicRepository extends MongoRepository<Topic, String> {
+
     Boolean existsByTopicName(String topicName);
     Topic findTopicIdByTopicName(String topicName);
 }

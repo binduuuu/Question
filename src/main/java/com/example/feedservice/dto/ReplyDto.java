@@ -6,4 +6,5 @@ import lombok.Data;
 public class ReplyDto {
     private String commentId;
     private String message;
+    private String userId;
 }

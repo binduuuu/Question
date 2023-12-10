@@ -4,10 +4,14 @@ import com.example.feedservice.ApiHandler.ApiResponse;
 import com.example.feedservice.dto.CommentDto;
 import com.example.feedservice.dto.ReplyDto;
 import com.example.feedservice.entity.Comment;
+import com.example.feedservice.entity.Reply;
+import com.example.feedservice.repository.CommentRepository;
+import com.example.feedservice.repository.ReplyRepository;
 import com.example.feedservice.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -16,6 +20,12 @@ import java.util.Optional;
 public class CommentController {
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private ReplyRepository replyRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @PostMapping("/addComment")
     public ApiResponse<String> addComment(@RequestBody CommentDto commentDto) {
@@ -82,5 +92,33 @@ public class CommentController {
         }
 
         return apiResponse;
+    }
+
+    @GetMapping("/getComments/{answerId}")
+    public ApiResponse<List<Comment>> getCommentsByAnswerId (@PathVariable("answerId") String answerId) {
+        ApiResponse<List<Comment>> apiResponse;
+        try {
+            List<Comment> comments = commentRepository.findByAnswerId(answerId);
+            apiResponse = new ApiResponse<>(comments);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse<>("404", "Comment not found");
+        }
+
+        return apiResponse;
+
+    }
+
+    @GetMapping("/getReplies/{commentId}")
+    public ApiResponse<List<Reply>> getRepliesByCommentId (@PathVariable("commentId") String commentId) {
+        ApiResponse<List<Reply>> apiResponse;
+        try {
+            List<Reply> replies = replyRepository.findByCommentId(commentId);
+            apiResponse = new ApiResponse<>(replies);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse<>("404", "Comment not found");
+        }
+
+        return apiResponse;
+
     }
 }

@@ -9,6 +9,8 @@ import com.example.feedservice.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -38,7 +40,7 @@ public class AnswerController {
     }
 
     @GetMapping("/getAnswer/{answerId}")
-    public ApiResponse<Answer> getAnswer (@PathVariable("answerId") String answerId) {
+    public ApiResponse<Answer> getAnswerById(@PathVariable("answerId") String answerId) {
         ApiResponse<Answer> apiResponse;
         try {
             Optional<Answer> answer = answerService.getAnswerById(answerId);
@@ -54,6 +56,24 @@ public class AnswerController {
         return apiResponse;
 
     }
+
+    @GetMapping("/getHome")
+    public ApiResponse<List<Answer>> getHomeAnswers (@RequestParam("userId") String userId,@RequestParam("page")int page,@RequestParam("size")int size) {
+        ApiResponse<List<Answer>> apiResponse;
+        List<String> categories = new ArrayList<>();
+        categories.add("Sports");
+        categories.add("Software");
+        try {
+            List<Answer> answers = answerService.getHomeAnswersByCategory(page,size,categories);
+            apiResponse = new ApiResponse<>(answers);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse<>("404", "Answer not found");
+        }
+
+        return apiResponse;
+
+    }
+
 
     @DeleteMapping("/deleteAnswer/{answerId}")
     public ApiResponse<String> deleteAnswerById(@PathVariable("answerId") String answerId) {

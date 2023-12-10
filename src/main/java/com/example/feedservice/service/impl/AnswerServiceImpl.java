@@ -5,10 +5,7 @@ import com.example.feedservice.dto.QuestionDto;
 import com.example.feedservice.entity.Answer;
 import com.example.feedservice.entity.Question;
 import com.example.feedservice.entity.Topic;
-import com.example.feedservice.repository.AnswerRepository;
-import com.example.feedservice.repository.CommentRepository;
-import com.example.feedservice.repository.QuestionRepository;
-import com.example.feedservice.repository.TopicRepository;
+import com.example.feedservice.repository.*;
 import com.example.feedservice.service.AnswerService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,9 @@ public class AnswerServiceImpl implements AnswerService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private AnswerCustomRepository answerCustomRepository;
+
     @Override
     public Boolean topicExists(String topicName) {
         return topicRepository.existsByTopicName(topicName);
@@ -43,27 +43,34 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    public List<Answer> getHomeAnswersByCategory(int page,int size,List<String> categories) {
+        return  answerCustomRepository.getHomeByCategory( page, size,categories);
+    }
+
+    @Override
     public Boolean addAnswer (AnswerDto answerDto ) {
         Answer answer = new Answer();
         BeanUtils.copyProperties(answerDto, answer);
         String answerId = UUID.randomUUID().toString();
         answer.setAnswerId(answerId);
-//        String topicName = answerDto.getTopicName();
-//        answer.setTopicId(getTopicId(topicName));
-
-        Question question = questionRepository.getQuestionByQuestionId(answerDto.getQuestionId());
-        List<String> answerIds = question.getAnswerIds();
-//        answerIds.add(answerId);
-        answer.setTopicId(question.getTopicId());
-        answer.setTopicName(question.getTopicName());
-        answerIds.add(answerId);
-        question.setAnswerIds(answerIds);
-        questionRepository.save(question);
+        List<String> answerIds = new ArrayList<>();
+        Optional<Question> question = questionRepository.findById(answerDto.getQuestionId());
+        if(question.isPresent()){
+//            Question question1 = question.get();
+            answerIds = question.get().getAnswerIds();
+            answerIds.add(answerId);
+            question.get().setAnswerIds(answerIds);
+            questionRepository.save(question.get());
+            answer.setTopicName(question.get().getTopicName());
+        }
+        else{
+            answerIds.add(answerId);
+        }
+        answer.setCommentVisibility(true);
+        answer.setDownvoteIds(new ArrayList<String>());
+        answer.setUpvoteIds(new ArrayList<String>());
+        answer.setCommentIds(new ArrayList<String>());
         Answer newAnswer = answerRepository.save(answer);
-
-//        answerIds.add(answerId);
-//        question.setAnswerIds(answerIds);
-//        questionRepository.save(question);
         return Objects.nonNull(newAnswer);
     }
 

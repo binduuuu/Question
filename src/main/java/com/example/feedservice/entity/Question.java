@@ -18,6 +18,5 @@ public class Question {
     private Date createdAt;
     private List<String> answerIds;
     private String status;
-    private String topicId;
     private String topicName;
 }

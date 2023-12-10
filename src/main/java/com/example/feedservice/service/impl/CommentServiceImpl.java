@@ -37,8 +37,9 @@ public class CommentServiceImpl implements CommentService {
         BeanUtils.copyProperties(commentDto, comment);
         String commentId = UUID.randomUUID().toString();
         comment.setCommentId(commentId);
-        Answer answer = answerRepository.getAnswerByAnswerId(commentDto.getAnswerId());
+        Answer answer = answerRepository.findById(commentDto.getAnswerId()).get();
         comment.setQuestionId(answer.getQuestionId());
+        comment.setRepliIds(new ArrayList<String>());
         Comment newComment = commentRepository.save(comment);
         List<String> commentIds = answer.getCommentIds();
         commentIds.add(commentId);
@@ -47,9 +48,6 @@ public class CommentServiceImpl implements CommentService {
         return Objects.nonNull(newComment);
     }
 
-//    public Boolean addReply(ReplyDto replyDto) {
-//        BeanUtils.copyProperties(commentDto, comment);
-//    }
 
     @Override
     public List<Comment> getAllComments () {
@@ -71,10 +69,12 @@ public class CommentServiceImpl implements CommentService {
     public Boolean addReply(ReplyDto replyDto) {
         Reply reply = new Reply();
         BeanUtils.copyProperties(replyDto, reply);
+        String replyId = UUID.randomUUID().toString();
+        reply.setReplyId(replyId);
         Comment comment = commentRepository.findById(replyDto.getCommentId()).get();
-        List<String> messages = comment.getReplies();
-        messages.add(replyDto.getMessage());
-        comment.setReplies(messages);
+        List<String> replyIds = comment.getRepliIds();
+        replyIds.add(replyId);
+        comment.setRepliIds(replyIds);
         commentRepository.save(comment);
         replyRepository.save(reply);
         return Objects.nonNull(reply);
