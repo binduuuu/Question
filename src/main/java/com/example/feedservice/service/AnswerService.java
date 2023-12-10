@@ -18,4 +18,5 @@ public interface AnswerService {
     List<Answer> getAllAnswers();
     Optional<Answer> getAnswerById(String answerId);
     void deleteAnswerById(String answerId);
+    List<Answer> getAllAnswersByQuestionId(String questionId);
 }

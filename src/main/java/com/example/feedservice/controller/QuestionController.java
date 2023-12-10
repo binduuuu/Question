@@ -71,4 +71,17 @@ public class QuestionController {
         }
         return apiResponse;
     }
+
+    @GetMapping("/getQuestionsByCategory/{topicName}")
+    public ApiResponse<List<Question>> getAllQuestionsByCategory(@PathVariable("topicName") String topicName) {
+        ApiResponse<List<Question>> apiResponse;
+        try {
+            List<Question> questions = questionService.getAllQuestionsByCategory(topicName);
+            apiResponse = new ApiResponse<>(questions);
+        }
+        catch(Exception e) {
+            apiResponse = new ApiResponse<>("404", "No questions found");
+        }
+        return apiResponse;
+    }
 }

@@ -82,4 +82,8 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.deleteById(questionId);
     }
 
+    public List<Question> getAllQuestionsByCategory(String topicName) {
+        return questionRepository.findAllByTopicName(topicName);
+    }
+
 }

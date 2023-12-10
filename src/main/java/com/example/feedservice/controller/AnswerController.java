@@ -93,4 +93,17 @@ public class AnswerController {
         }
         return apiResponse;
     }
+
+    @GetMapping("/getAnswers/{questionId}")
+    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@PathVariable("questionId") String questionId) {
+        ApiResponse<List<Answer>> apiResponse;
+        try {
+            List<Answer> answers = answerService.getAllAnswersByQuestionId(questionId);
+            apiResponse = new ApiResponse<>(answers);
+        }
+        catch(Exception e) {
+            apiResponse = new ApiResponse<>("404", "No answers found");
+        }
+        return apiResponse;
+    }
 }

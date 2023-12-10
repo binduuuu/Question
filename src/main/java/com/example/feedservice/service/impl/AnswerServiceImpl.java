@@ -90,4 +90,9 @@ public class AnswerServiceImpl implements AnswerService {
         answerRepository.deleteById(answerId);
     }
 
+    @Override
+    public List<Answer> getAllAnswersByQuestionId(String questionId) {
+        return answerRepository.findAllByQuestionId(questionId);
+    }
+
 }
