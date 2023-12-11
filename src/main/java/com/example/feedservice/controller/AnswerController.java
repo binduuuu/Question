@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/answer")
+@RequestMapping("/quora/answer")
 @CrossOrigin
 public class AnswerController {
 
@@ -104,6 +104,45 @@ public class AnswerController {
         } catch (Exception e) {
             apiResponse = new ApiResponse<>("404", "Answer not found");
 
+        }
+        return apiResponse;
+    }
+
+    @GetMapping("/getAnswers/{questionId}")
+    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@PathVariable("questionId") String questionId) {
+        ApiResponse<List<Answer>> apiResponse;
+        try {
+            List<Answer> answers = answerService.getAllAnswersByQuestionId(questionId);
+            apiResponse = new ApiResponse<>(answers);
+        }
+        catch(Exception e) {
+            apiResponse = new ApiResponse<>("404", "No answers found");
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/updateUpvotes")
+    public ApiResponse<Integer> updateUpvotes(@RequestParam("userId") String userId, @RequestParam("answerId") String answerId) {
+        ApiResponse<Integer> apiResponse;
+        try {
+            int upvotes = answerService.updateUpvotes(userId, answerId);
+            apiResponse = new ApiResponse<>(upvotes);
+        }
+        catch (Exception e) {
+            apiResponse = new ApiResponse<>("404", "Could not update");
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/updateDownvotes")
+    public ApiResponse<Integer> updateDownvotes(@RequestParam("userId") String userId, @RequestParam("answerId") String answerId) {
+        ApiResponse<Integer> apiResponse;
+        try {
+            int downvotes = answerService.updateDownvotes(userId, answerId);
+            apiResponse = new ApiResponse<>(downvotes);
+        }
+        catch (Exception e) {
+            apiResponse = new ApiResponse<>("404", "Could not update");
         }
         return apiResponse;
     }

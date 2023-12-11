@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/quora/comment")
 @CrossOrigin
 public class CommentController {
     @Autowired

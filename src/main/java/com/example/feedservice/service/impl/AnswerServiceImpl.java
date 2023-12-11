@@ -90,4 +90,31 @@ public class AnswerServiceImpl implements AnswerService {
         answerRepository.deleteById(answerId);
     }
 
+    @Override
+    public List<Answer> getAllAnswersByQuestionId(String questionId) {
+        return answerRepository.findAllByQuestionId(questionId);
+    }
+
+    @Override
+    public int updateUpvotes(String userId, String answerId) {
+        Answer answer = answerRepository.findById(answerId).get();
+        List<String> upvotedIds = answer.getUpvoteIds();
+        upvotedIds.add(userId);
+        answer.setUpvotes(upvotedIds.size());
+        answer.setUpvoteIds(upvotedIds);
+        answerRepository.save(answer);
+        return upvotedIds.size();
+    }
+
+    @Override
+    public int updateDownvotes(String userId, String answerId) {
+        Answer answer = answerRepository.findById(answerId).get();
+        List<String> downvoteIds = answer.getDownvoteIds();
+        downvoteIds.add(userId);
+        answer.setDownvotes(downvoteIds.size());
+        answer.setDownvoteIds(downvoteIds);
+        answerRepository.save(answer);
+        return downvoteIds.size();
+    }
+
 }
