@@ -13,6 +13,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/quora/question")
+@RequestMapping("/question")
+@CrossOrigin
 public class QuestionController {
 
     @Autowired
@@ -53,6 +55,7 @@ public class QuestionController {
         return apiResponse;
 
     }
+
 
     @DeleteMapping("/deleteQuestion/{questionId}")
     public ApiResponse<String> deleteQuestionById(@PathVariable("questionId") String questionId) {
