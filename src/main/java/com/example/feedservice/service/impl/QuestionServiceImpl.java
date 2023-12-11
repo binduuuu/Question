@@ -3,10 +3,7 @@ package com.example.feedservice.service.impl;
 import com.example.feedservice.dto.QuestionDto;
 import com.example.feedservice.entity.Question;
 import com.example.feedservice.entity.Topic;
-import com.example.feedservice.repository.AnswerRepository;
-import com.example.feedservice.repository.CommentRepository;
-import com.example.feedservice.repository.QuestionRepository;
-import com.example.feedservice.repository.TopicRepository;
+import com.example.feedservice.repository.*;
 import com.example.feedservice.service.QuestionService;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +29,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private QuestionCustomRepository questionCustomRepository;
 
     public Boolean topicExists(String topicName) {
         return topicRepository.existsByTopicName(topicName);
@@ -84,6 +84,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     public List<Question> getAllQuestionsByCategory(String topicName) {
         return questionRepository.findAllByTopicName(topicName);
+    }
+
+    @Override
+    public List<Question> getHomeQuestionsByCategory(List<String> categories) {
+        return  questionCustomRepository.getQuestionsByCategory(categories);
     }
 
 }

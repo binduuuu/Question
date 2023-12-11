@@ -18,4 +18,5 @@ public interface QuestionService {
     Optional<Question> getQuestionById(String questionId);
     void deleteQuestionById(String questionId);
     List<Question> getAllQuestionsByCategory(String topicName);
+    List<Question> getHomeQuestionsByCategory(List<String> categories);
 }

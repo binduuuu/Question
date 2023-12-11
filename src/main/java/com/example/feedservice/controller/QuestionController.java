@@ -7,11 +7,12 @@ import com.example.feedservice.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/quora/question")
 public class QuestionController {
 
     @Autowired
@@ -82,6 +83,22 @@ public class QuestionController {
         catch(Exception e) {
             apiResponse = new ApiResponse<>("404", "No questions found");
         }
+        return apiResponse;
+    }
+
+    @GetMapping("/getQuestionsByCategory")
+    public ApiResponse<List<Question>> getQuestionsByCategory (@RequestParam("userId") String userId) {
+        ApiResponse<List<Question>> apiResponse;
+        List<String> categories = new ArrayList<>();
+        categories.add("Sports");
+        categories.add("Software");
+        try {
+            List<Question> questions = questionService.getHomeQuestionsByCategory(categories);
+            apiResponse = new ApiResponse<>(questions);
+        } catch (Exception e) {
+            apiResponse = new ApiResponse<>("404", "Questions not found");
+        }
+
         return apiResponse;
     }
 }
