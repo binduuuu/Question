@@ -13,7 +13,7 @@ public class AnswerDto {
     private Date createdAt;
     private String answer;
     //answerIds
-    private int upvotes;
-    private int downvotes;
+//    private int upvotes;
+//    private int downvotes;
 }
 
