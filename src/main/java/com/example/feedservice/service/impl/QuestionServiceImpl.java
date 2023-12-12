@@ -1,6 +1,8 @@
 package com.example.feedservice.service.impl;
 
+import com.example.feedservice.FeignHandler.SolrFeign;
 import com.example.feedservice.dto.QuestionDto;
+import com.example.feedservice.dto.SearchDto;
 import com.example.feedservice.entity.Question;
 import com.example.feedservice.entity.Topic;
 import com.example.feedservice.repository.*;
@@ -29,6 +31,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private SolrFeign solrFeign;
 
     @Autowired
     private QuestionCustomRepository questionCustomRepository;
@@ -66,6 +71,14 @@ public class QuestionServiceImpl implements QuestionService {
 //            }
 //        }
         Question newQuestion = questionRepository.save(question);
+
+        SearchDto searchDto = new SearchDto();
+//        searchDto.setProfileId(questionDto.getUserId());
+        searchDto.setQuestionId(questionId);
+        searchDto.setAnswerCount(newQuestion.getAnswerIds().size());
+        searchDto.setSearchTerm(newQuestion.getQuestion());
+        solrFeign.saveQuestion(searchDto);
+
         return Objects.nonNull(newQuestion);
     }
 

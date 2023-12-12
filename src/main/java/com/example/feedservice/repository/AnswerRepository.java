@@ -10,4 +10,5 @@ import java.util.List;
 public interface AnswerRepository extends MongoRepository<Answer, String> {
     Answer getAnswerByAnswerId(String answerId);
     List<Answer> findAllByQuestionId(String questionId);
+    List<Answer> findAllByUserId (String userId);
 }

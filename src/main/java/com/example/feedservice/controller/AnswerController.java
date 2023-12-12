@@ -1,10 +1,18 @@
 package com.example.feedservice.controller;
 
 import com.example.feedservice.ApiHandler.ApiResponse;
+import com.example.feedservice.FeignHandler.ProfileFeign;
+import com.example.feedservice.FeignHandler.SolrFeign;
 import com.example.feedservice.dto.AnswerDto;
+
+import com.example.feedservice.dto.SearchDto;
+
+import com.example.feedservice.repository.AnswerRepository;
+
 import com.example.feedservice.dto.AnswerResponseDto;
 import com.example.feedservice.entity.Answer;
 import com.example.feedservice.entity.Question;
+
 import com.example.feedservice.repository.QuestionRepository;
 import com.example.feedservice.service.AnswerService;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/quora/answer")
+@RequestMapping("/quora/feed/answer")
 @CrossOrigin
 public class AnswerController {
 
@@ -24,6 +32,16 @@ public class AnswerController {
     private AnswerService answerService;
 
     @Autowired
+    private ProfileFeign profileFeign;
+
+    @Autowired
+    private SolrFeign solrFeign;
+
+    @Autowired
+    private AnswerRepository answerRepository;
+
+    @Autowired
+
     private QuestionRepository questionRepository;
 
     @PostMapping("/addAnswer")
@@ -32,6 +50,13 @@ public class AnswerController {
         try {
             Boolean inserted = answerService.addAnswer(answerDto);
             if (inserted) {
+                profileFeign.updatePoints(answerDto.getUserId(), 5);
+                SearchDto searchDto = new SearchDto();
+                searchDto.setQuestionId(answerDto.getQuestionId());
+                Question question = questionRepository.findByQuestionId(answerDto.getQuestionId());
+                searchDto.setSearchTerm((question.getQuestion()));
+                searchDto.setAnswerCount(question.getAnswerIds().size());
+                solrFeign.updateQuestion(answerDto.getQuestionId(), searchDto);
                 apiResponse = new ApiResponse<>("Answer added");
             } else {
                 apiResponse = new ApiResponse<>("404", "Could not add the answer");
@@ -108,8 +133,8 @@ public class AnswerController {
         return apiResponse;
     }
 
-    @GetMapping("/getAnswers/{questionId}")
-    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@PathVariable("questionId") String questionId) {
+    @GetMapping("/getAnswers")
+    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@RequestParam("questionId") String questionId) {
         ApiResponse<List<Answer>> apiResponse;
         try {
             List<Answer> answers = answerService.getAllAnswersByQuestionId(questionId);
@@ -126,6 +151,7 @@ public class AnswerController {
         ApiResponse<Integer> apiResponse;
         try {
             int upvotes = answerService.updateUpvotes(userId, answerId);
+            profileFeign.updatePoints(userId, upvotes);
             apiResponse = new ApiResponse<>(upvotes);
         }
         catch (Exception e) {
@@ -139,6 +165,7 @@ public class AnswerController {
         ApiResponse<Integer> apiResponse;
         try {
             int downvotes = answerService.updateDownvotes(userId, answerId);
+            profileFeign.updatePoints(userId, -downvotes);
             apiResponse = new ApiResponse<>(downvotes);
         }
         catch (Exception e) {
@@ -146,4 +173,16 @@ public class AnswerController {
         }
         return apiResponse;
     }
+
+    @GetMapping("/getAllAnswers")
+    public List<Answer> getAllAnswerByUserId(@RequestParam("userId") String userId) {
+        return new ArrayList<Answer>(answerRepository.findAllByUserId(userId));
+    }
+
+    @GetMapping("/getAllQuestions")
+    public List<Question> getAllQuestionByUserId(@RequestParam("userId") String userId) {
+        return new ArrayList<Question>(questionRepository.findAllByUserId(userId));
+    }
+
+
 }
