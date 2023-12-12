@@ -2,10 +2,10 @@ package com.example.feedservice.controller;
 
 import com.example.feedservice.ApiHandler.ApiResponse;
 import com.example.feedservice.FeignHandler.ProfileFeign;
+import com.example.feedservice.FeignHandler.SolrFeign;
 import com.example.feedservice.dto.AnswerDto;
-import com.example.feedservice.dto.QuestionDto;
+import com.example.feedservice.dto.SearchDto;
 import com.example.feedservice.entity.Answer;
-import com.example.feedservice.entity.Profile;
 import com.example.feedservice.entity.Question;
 import com.example.feedservice.repository.AnswerRepository;
 import com.example.feedservice.repository.QuestionRepository;
@@ -29,6 +29,9 @@ public class AnswerController {
     private ProfileFeign profileFeign;
 
     @Autowired
+    private SolrFeign solrFeign;
+
+    @Autowired
     private AnswerRepository answerRepository;
 
     @Autowired
@@ -40,6 +43,13 @@ public class AnswerController {
         try {
             Boolean inserted = answerService.addAnswer(answerDto);
             if (inserted) {
+                profileFeign.updatePoints(answerDto.getUserId(), 5);
+                SearchDto searchDto = new SearchDto();
+                searchDto.setQuestionId(answerDto.getQuestionId());
+                Question question = questionRepository.findByQuestionId(answerDto.getQuestionId());
+                searchDto.setSearchTerm((question.getQuestion()));
+                searchDto.setAnswerCount(question.getAnswerIds().size());
+                solrFeign.updateQuestion(answerDto.getQuestionId(), searchDto);
                 apiResponse = new ApiResponse<>("Answer added");
             } else {
                 apiResponse = new ApiResponse<>("404", "Could not add the answer");
@@ -125,6 +135,7 @@ public class AnswerController {
         ApiResponse<Integer> apiResponse;
         try {
             int upvotes = answerService.updateUpvotes(userId, answerId);
+            profileFeign.updatePoints(userId, upvotes);
             apiResponse = new ApiResponse<>(upvotes);
         }
         catch (Exception e) {
@@ -138,6 +149,7 @@ public class AnswerController {
         ApiResponse<Integer> apiResponse;
         try {
             int downvotes = answerService.updateDownvotes(userId, answerId);
+            profileFeign.updatePoints(userId, -downvotes);
             apiResponse = new ApiResponse<>(downvotes);
         }
         catch (Exception e) {
@@ -156,31 +168,5 @@ public class AnswerController {
         return new ArrayList<Question>(questionRepository.findAllByUserId(userId));
     }
 
-    @GetMapping("/getPoints")
-    public int getPoints(@RequestParam("userId") String userId) {
-        List<Answer> answers = answerRepository.findAllByUserId(userId);
-        int count = answers.size()*5;
-        for(Answer answer: answers) {
-            count += answer.getUpvotes();
-            count -= answer.getDownvotes();
-        }
-        List<Question> questions = questionRepository.findAllByUserId(userId);
-        count += questions.size()*10;
-        Profile profile = profileFeign.findById(userId);
-        profile.setPoints(count);
-        return count;
-    }
 
-    @GetMapping("/profileClassification")
-    public String profileClassifier(@RequestParam("userId") String userId) {
-        Profile profile = profileFeign.findById(userId);
-        int points = profile.getPoints();
-        if(points>=6000)
-            return "Platinum User";
-        else if(points>=2501 && points<=6000)
-            return "Gold user";
-        else if(points>=1001 && points<=2500)
-            return "Silver user";
-        else return "Beginner";
-    }
 }

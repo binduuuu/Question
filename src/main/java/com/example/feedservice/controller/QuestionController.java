@@ -1,7 +1,10 @@
 package com.example.feedservice.controller;
 
 import com.example.feedservice.ApiHandler.ApiResponse;
+import com.example.feedservice.FeignHandler.ProfileFeign;
+import com.example.feedservice.FeignHandler.SolrFeign;
 import com.example.feedservice.dto.QuestionDto;
+import com.example.feedservice.dto.SearchDto;
 import com.example.feedservice.entity.Question;
 import com.example.feedservice.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +21,28 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
+    @Autowired
+    private ProfileFeign profileFeign;
+
+    @Autowired
+    private SolrFeign solrFeign;
+
     @PostMapping("/addQuestion")
     public ApiResponse<String> addQuestion(@RequestBody QuestionDto questionDto) {
         ApiResponse<String> apiResponse;
         try {
             Boolean inserted = questionService.addQuestion(questionDto);
             if (inserted) {
+                profileFeign.updatePoints(questionDto.getUserId(), 10);
+
                 apiResponse = new ApiResponse<>("Question added");
+
             } else {
-                apiResponse = new ApiResponse<>("404", "Could not add the question");
+                apiResponse = new ApiResponse<>("404", "insertion failed");
             }
 
         } catch (Exception e) {
-            apiResponse = new ApiResponse<>("404", "Could not add the question");
+            apiResponse = new ApiResponse<>("404", e.getMessage());
         }
 
         return apiResponse;
@@ -42,12 +54,12 @@ public class QuestionController {
         try {
             Optional<Question> question = questionService.getQuestionById(questionId);
             if (!question.isPresent()) {
-                apiResponse = new ApiResponse<>("404", "Check the product id and try again, product not found");
+                apiResponse = new ApiResponse<>("404", "Question not found");
             } else {
                 apiResponse = new ApiResponse<>(question.get());
             }
         } catch (Exception e) {
-            apiResponse = new ApiResponse<>("404", "Check the product id and try again, product not found");
+            apiResponse = new ApiResponse<>("404", "Question not found");
         }
 
         return apiResponse;
