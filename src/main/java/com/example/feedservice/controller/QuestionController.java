@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/quora/question")
-@RequestMapping("/question")
 @CrossOrigin
 public class QuestionController {
 
