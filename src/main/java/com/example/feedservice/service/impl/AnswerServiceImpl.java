@@ -3,10 +3,12 @@ package com.example.feedservice.service.impl;
 import com.example.feedservice.dto.AnswerDto;
 import com.example.feedservice.dto.QuestionDto;
 import com.example.feedservice.entity.Answer;
+import com.example.feedservice.entity.EmailDetails;
 import com.example.feedservice.entity.Question;
 import com.example.feedservice.entity.Topic;
 import com.example.feedservice.repository.*;
 import com.example.feedservice.service.AnswerService;
+import com.example.feedservice.service.EmailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ import java.util.*;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private TopicRepository topicRepository;
@@ -96,24 +101,37 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public int updateUpvotes(String userId, String answerId) {
+    public int updateUpvotes(String userId, String answerId,String body) {
         Answer answer = answerRepository.findById(answerId).get();
         List<String> upvotedIds = answer.getUpvoteIds();
         upvotedIds.add(userId);
         answer.setUpvotes(upvotedIds.size());
         answer.setUpvoteIds(upvotedIds);
         answerRepository.save(answer);
+
+        EmailDetails emailDetails = new EmailDetails();
+        emailDetails.setBody("some just DownVoted your Answer");
+        emailDetails.setRecipient("sanskaragarwaljmt@gmail.com");
+        emailDetails.setSource("Quora");
+        emailDetails.setSubject("upvoted");
+        emailService.sendEmail(emailDetails);
         return upvotedIds.size();
     }
 
     @Override
-    public int updateDownvotes(String userId, String answerId) {
+    public int updateDownvotes(String userId, String answerId,String body) {
         Answer answer = answerRepository.findById(answerId).get();
         List<String> downvoteIds = answer.getDownvoteIds();
         downvoteIds.add(userId);
         answer.setDownvotes(downvoteIds.size());
         answer.setDownvoteIds(downvoteIds);
         answerRepository.save(answer);
+        EmailDetails emailDetails = new EmailDetails();
+        emailDetails.setBody("some just DownVoted your Answer");
+        emailDetails.setRecipient("sanskaragarwaljmt@gmail.com");
+        emailDetails.setSource("Quora");
+        emailDetails.setSubject("Downvoted");
+        emailService.sendEmail(emailDetails);
         return downvoteIds.size();
     }
 
