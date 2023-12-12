@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/quora/comment")
+@RequestMapping("/quora/feed/comment")
 @CrossOrigin
 public class CommentController {
     @Autowired
@@ -81,18 +81,7 @@ public class CommentController {
         return apiResponse;
     }
 
-    @PostMapping("/addReply")
-    public ApiResponse<String> addReply(@RequestBody ReplyDto replyDto) {
-        ApiResponse<String> apiResponse;
-        Boolean inserted = commentService.addReply(replyDto);
-        if (inserted) {
-            apiResponse = new ApiResponse<>("Reply added");
-        } else {
-            apiResponse = new ApiResponse<>("404", "Could not add the reply");
-        }
 
-        return apiResponse;
-    }
 
     @GetMapping("/getComments/{answerId}")
     public ApiResponse<List<Comment>> getCommentsByAnswerId (@PathVariable("answerId") String answerId) {
@@ -106,6 +95,18 @@ public class CommentController {
 
         return apiResponse;
 
+    }
+    @PostMapping("/addReply")
+    public ApiResponse<String> addReply(@RequestBody ReplyDto replyDto) {
+        ApiResponse<String> apiResponse;
+        Boolean inserted = commentService.addReply(replyDto);
+        if (inserted) {
+            apiResponse = new ApiResponse<>("Reply added");
+        } else {
+            apiResponse = new ApiResponse<>("404", "Could not add the reply");
+        }
+
+        return apiResponse;
     }
 
     @GetMapping("/getReplies/{commentId}")

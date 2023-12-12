@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/quora/question")
+@RequestMapping("/quora/feed/question")
+@CrossOrigin
 public class QuestionController {
 
     @Autowired
@@ -66,6 +67,7 @@ public class QuestionController {
 
     }
 
+
     @DeleteMapping("/deleteQuestion/{questionId}")
     public ApiResponse<String> deleteQuestionById(@PathVariable("questionId") String questionId) {
 
@@ -84,19 +86,19 @@ public class QuestionController {
         }
         return apiResponse;
     }
-
-    @GetMapping("/getQuestionsByCategory/{topicName}")
-    public ApiResponse<List<Question>> getAllQuestionsByCategory(@PathVariable("topicName") String topicName) {
-        ApiResponse<List<Question>> apiResponse;
-        try {
-            List<Question> questions = questionService.getAllQuestionsByCategory(topicName);
-            apiResponse = new ApiResponse<>(questions);
-        }
-        catch(Exception e) {
-            apiResponse = new ApiResponse<>("404", "No questions found");
-        }
-        return apiResponse;
-    }
+//
+//    @GetMapping("/getQuestionsByCategory/{topicName}")
+//    public ApiResponse<List<Question>> getAllQuestionsByCategory(@PathVariable("topicName") String topicName) {
+//        ApiResponse<List<Question>> apiResponse;
+//        try {
+//            List<Question> questions = questionService.getAllQuestionsByCategory(topicName);
+//            apiResponse = new ApiResponse<>(questions);
+//        }
+//        catch(Exception e) {
+//            apiResponse = new ApiResponse<>("404", "No questions found");
+//        }
+//        return apiResponse;
+//    }
 
     @GetMapping("/getQuestionsByCategory")
     public ApiResponse<List<Question>> getQuestionsByCategory (@RequestParam("userId") String userId) {

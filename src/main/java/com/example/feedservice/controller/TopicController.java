@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/quora/topic")
+@RequestMapping("/quora/feed/topic")
 @CrossOrigin
 public class TopicController {
 

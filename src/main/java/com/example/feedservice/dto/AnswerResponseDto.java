@@ -1,18 +1,14 @@
-package com.example.feedservice.entity;
+package com.example.feedservice.dto;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-@Document(collection = "answer")
-public class Answer {
+public class AnswerResponseDto {
 
-
-    @Id
+    private String question;
     private String answerId;
     private String questionId;
     private String userId;

@@ -4,12 +4,18 @@ import com.example.feedservice.ApiHandler.ApiResponse;
 import com.example.feedservice.FeignHandler.ProfileFeign;
 import com.example.feedservice.FeignHandler.SolrFeign;
 import com.example.feedservice.dto.AnswerDto;
+
 import com.example.feedservice.dto.SearchDto;
+
+import com.example.feedservice.repository.AnswerRepository;
+
+import com.example.feedservice.dto.AnswerResponseDto;
 import com.example.feedservice.entity.Answer;
 import com.example.feedservice.entity.Question;
-import com.example.feedservice.repository.AnswerRepository;
+
 import com.example.feedservice.repository.QuestionRepository;
 import com.example.feedservice.service.AnswerService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/quora/answer")
+@RequestMapping("/quora/feed/answer")
 @CrossOrigin
 public class AnswerController {
 
@@ -35,6 +41,7 @@ public class AnswerController {
     private AnswerRepository answerRepository;
 
     @Autowired
+
     private QuestionRepository questionRepository;
 
     @PostMapping("/addAnswer")
@@ -81,14 +88,23 @@ public class AnswerController {
     }
 
     @GetMapping("/getHome")
-    public ApiResponse<List<Answer>> getHomeAnswers (@RequestParam("userId") String userId,@RequestParam("page")int page,@RequestParam("size")int size) {
-        ApiResponse<List<Answer>> apiResponse;
+    public ApiResponse<List<AnswerResponseDto>> getHomeAnswers (@RequestParam("userId") String userId, @RequestParam("page")int page, @RequestParam("size")int size) {
+        ApiResponse<List<AnswerResponseDto>> apiResponse;
         List<String> categories = new ArrayList<>();
         categories.add("Sports");
         categories.add("Software");
         try {
             List<Answer> answers = answerService.getHomeAnswersByCategory(page,size,categories);
-            apiResponse = new ApiResponse<>(answers);
+            List<AnswerResponseDto> answersResponseDtos = new ArrayList<>();
+            for (Answer answer: answers) {
+                AnswerResponseDto answerResponseDto = new AnswerResponseDto();
+                BeanUtils.copyProperties(answer,answerResponseDto);
+                Question question = questionRepository.findById(answer.getQuestionId()).get();
+                answerResponseDto.setQuestion(question.getQuestion());
+                answersResponseDtos.add(answerResponseDto);
+            }
+
+            apiResponse = new ApiResponse<>(answersResponseDtos);
         } catch (Exception e) {
             apiResponse = new ApiResponse<>("404", "Answer not found");
         }
@@ -117,8 +133,8 @@ public class AnswerController {
         return apiResponse;
     }
 
-    @GetMapping("/getAnswers/{questionId}")
-    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@PathVariable("questionId") String questionId) {
+    @GetMapping("/getAnswers")
+    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@RequestParam("questionId") String questionId) {
         ApiResponse<List<Answer>> apiResponse;
         try {
             List<Answer> answers = answerService.getAllAnswersByQuestionId(questionId);
