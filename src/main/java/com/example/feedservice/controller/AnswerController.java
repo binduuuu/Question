@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/quora/answer")
+@RequestMapping("/quora/feed/answer")
 @CrossOrigin
 public class AnswerController {
 
@@ -108,8 +108,8 @@ public class AnswerController {
         return apiResponse;
     }
 
-    @GetMapping("/getAnswers/{questionId}")
-    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@PathVariable("questionId") String questionId) {
+    @GetMapping("/getAnswers")
+    public ApiResponse<List<Answer>> getAllAnswersByQuestionId(@RequestParam("questionId") String questionId) {
         ApiResponse<List<Answer>> apiResponse;
         try {
             List<Answer> answers = answerService.getAllAnswersByQuestionId(questionId);

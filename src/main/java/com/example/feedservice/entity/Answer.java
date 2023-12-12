@@ -12,7 +12,6 @@ import java.util.List;
 public class Answer {
 
 
-
     @Id
     private String answerId;
     private String questionId;
