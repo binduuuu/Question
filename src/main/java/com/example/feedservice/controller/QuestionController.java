@@ -103,9 +103,11 @@ public class QuestionController {
     @GetMapping("/getQuestionsByCategory")
     public ApiResponse<List<Question>> getQuestionsByCategory (@RequestParam("userId") String userId) {
         ApiResponse<List<Question>> apiResponse;
+//        List<String> categories = new ArrayList<>();
+//        categories.add("Sports");
+//        categories.add("Software");
         List<String> categories = new ArrayList<>();
-        categories.add("Sports");
-        categories.add("Software");
+        categories = profileFeign.getCategoriesByUserId(userId).getResultData();
         try {
             List<Question> questions = questionService.getHomeQuestionsByCategory(categories);
             apiResponse = new ApiResponse<>(questions);
