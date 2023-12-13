@@ -19,6 +19,6 @@ public interface AnswerService {
     Optional<Answer> getAnswerById(String answerId);
     void deleteAnswerById(String answerId);
     List<Answer> getAllAnswersByQuestionId(String questionId);
-    int updateUpvotes(String userId, String answerId,String body);
-    int updateDownvotes(String userId, String answerId,String body);
+    int updateUpvotes(String userId, String answerId);
+    int updateDownvotes(String userId, String answerId);
 }

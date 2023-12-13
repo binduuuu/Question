@@ -101,7 +101,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public int updateUpvotes(String userId, String answerId,String body) {
+    public int updateUpvotes(String userId, String answerId) {
         Answer answer = answerRepository.findById(answerId).get();
         List<String> upvotedIds = answer.getUpvoteIds();
         upvotedIds.add(userId);
@@ -119,7 +119,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public int updateDownvotes(String userId, String answerId,String body) {
+    public int updateDownvotes(String userId, String answerId) {
         Answer answer = answerRepository.findById(answerId).get();
         List<String> downvoteIds = answer.getDownvoteIds();
         downvoteIds.add(userId);

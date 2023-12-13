@@ -90,9 +90,12 @@ public class AnswerController {
     @GetMapping("/getHome")
     public ApiResponse<List<AnswerResponseDto>> getHomeAnswers (@RequestParam("userId") String userId, @RequestParam("page")int page, @RequestParam("size")int size) {
         ApiResponse<List<AnswerResponseDto>> apiResponse;
+//        List<String> categories = new ArrayList<>();
+//        categories.add("Sports");
+//        categories.add("Software");
+
         List<String> categories = new ArrayList<>();
-        categories.add("Sports");
-        categories.add("Software");
+        categories = profileFeign.getCategoriesByUserId(userId).getResultData();
         try {
             List<Answer> answers = answerService.getHomeAnswersByCategory(page,size,categories);
             List<AnswerResponseDto> answersResponseDtos = new ArrayList<>();
